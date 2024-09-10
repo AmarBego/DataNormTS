@@ -1,10 +1,15 @@
-// tests/normalize.test.ts
 import { normalize, safeNormalize, NormalizationError } from '../src/normalize';
 import { Schema, ObjectSchemaEntity, ArraySchemaEntity, PrimitiveSchemaEntity, CustomSchemaEntity } from '../src/types';
-import { getCustomSchemaHandler } from '../src/types'; // Correct import path
-import { logger } from '../src/logger'; // Ensure logger is correctly imported if used
+import { registerCustomSchemaHandler } from '../src/types';
+import { logger } from '../src/logger';
+
+jest.mock('../src/logger');
 
 describe('normalize', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should normalize valid object data correctly', () => {
     const schema: Schema = {
       user: {
@@ -38,30 +43,31 @@ describe('normalize', () => {
   });
 
   it('should throw an error for invalid schema', () => {
-    const schema: any = 'invalid schema'; // Ensure this is an invalid schema
+    const schema: any = 'invalid schema';
     const data = { id: '1' };
-
+  
     expect(() => normalize(data, schema)).toThrow('Invalid schema');
   });
 
   it('should throw an error for missing id in object schema', () => {
-    const schema: ObjectSchemaEntity = {
-      type: 'object',
-      name: 'user',
-      properties: {
-        name: { type: 'string' }
-      },
-      required: ['id']
+    const schema: Schema = {
+      user: {
+        type: 'object',
+        name: 'user',
+        properties: {
+          name: { type: 'string' }
+        }
+      }
     };
 
     const data = { name: 'John Doe' };
 
-    expect(() => normalize(data, schema as any)).toThrow('Entity must have an id field');
+    expect(() => normalize(data, schema)).toThrow('Entity must have an id field');
   });
 
   it('should handle custom schema type', () => {
-    const customHandler = jest.fn().mockImplementation((entity: unknown, schema: CustomSchemaEntity, entities: any) => 'custom-id');
-    (getCustomSchemaHandler as jest.Mock).mockReturnValue(customHandler);
+    const customHandler = jest.fn().mockImplementation(() => 'custom-id');
+    registerCustomSchemaHandler('customEntity', customHandler);
 
     const schema: Schema = {
       customEntity: {
@@ -81,9 +87,17 @@ describe('normalize', () => {
       result: 'custom-id'
     };
 
-    expect(normalize(data, schema)).toEqual(expected);
-    expect(customHandler).toHaveBeenCalledWith(data, schema.customEntity, {});
+    const result = normalize(data, schema);
+    expect(result).toEqual(expected);
+    expect(customHandler).toHaveBeenCalledWith(
+      data, 
+      schema.customEntity, 
+      expect.objectContaining({
+        customEntity: expect.any(Object)
+      })
+    );
   });
+
 
   it('should handle nested array normalization', () => {
     const schema: Schema = {
@@ -121,7 +135,7 @@ describe('normalize', () => {
   it('should throw an error for unsupported schema type', () => {
     const schema: Schema = {
       unsupported: {
-        type: 'unsupported' as any, // Force type to trigger error
+        type: 'unsupported' as any,
         name: 'unsupported'
       }
     };

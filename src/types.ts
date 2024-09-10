@@ -29,7 +29,7 @@ export interface PrimitiveSchemaEntity extends BaseSchemaEntity {
 
 export interface CustomSchemaEntity extends BaseSchemaEntity {
   type: 'custom';
-  // Add any common properties for custom types here
+  name: string;
 }
 
 export type SchemaEntity = ObjectSchemaEntity | ArraySchemaEntity | PrimitiveSchemaEntity | CustomSchemaEntity;
@@ -46,7 +46,7 @@ export interface NormalizedData {
       [id: EntityID]: unknown;
     };
   };
-  result: EntityID | EntityID[];
+  result: EntityID | EntityID[] | unknown;
 }
 
 // Custom schema handler type
@@ -67,4 +67,9 @@ export function registerCustomSchemaHandler(type: string, handler: CustomSchemaH
 // Function to get a custom schema handler
 export function getCustomSchemaHandler(type: string): CustomSchemaHandler | undefined {
   return customSchemaHandlers[type];
+}
+
+// Add this new function to clear handlers (useful for testing)
+export function clearCustomSchemaHandlers(): void {
+  Object.keys(customSchemaHandlers).forEach(key => delete customSchemaHandlers[key]);
 }

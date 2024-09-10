@@ -36,7 +36,7 @@ export class NormalizationError extends Error {
   }
   
   function isValidSchemaType(type: unknown): type is SchemaType {
-    return typeof type === 'string' && ['object', 'array', 'string', 'number', 'boolean', 'custom'].includes(type);
+    return typeof type === 'string' && (['object', 'array', 'string', 'number', 'boolean', 'custom'] as SchemaType[]).includes(type as SchemaType);
   }
   
   function isObjectSchemaEntity(schema: SchemaEntity): schema is ObjectSchemaEntity {
@@ -89,30 +89,41 @@ export class NormalizationError extends Error {
         throw new NormalizationError('Invalid schema entry', { schemaKey: firstSchemaKey, schemaEntry: firstSchemaEntity });
       }
       
-      if (!('type' in firstSchemaEntity) || !isValidSchemaType(firstSchemaEntity.type)) {
-        throw new NormalizationError('Invalid schema type', { schemaKey: firstSchemaKey, schemaEntry: firstSchemaEntity });
+      if (!('type' in firstSchemaEntity)) {
+        throw new NormalizationError('Schema entry must have a type', { schemaKey: firstSchemaKey, schemaEntry: firstSchemaEntity });
+      }
+  
+      if (!isValidSchemaType(firstSchemaEntity.type)) {
+        throw new NormalizationError('Unsupported schema type', { schemaKey: firstSchemaKey, schemaType: firstSchemaEntity.type });
       }
       
       const result = normalizeEntity(data, firstSchemaEntity, entities);
-      
+    
       return { entities, result };
     } catch (error) {
       return handleError(error, { data, schema });
     }
   }
   
-  function normalizeEntity(entity: unknown, schema: SchemaEntity, entities: NormalizedData['entities']): EntityID | EntityID[] {
+  function normalizeEntity(entity: unknown, schema: SchemaEntity, entities: NormalizedData['entities']): EntityID | EntityID[] | unknown {
     try {
       if (isCustomSchemaEntity(schema)) {
-        const customHandler = getCustomSchemaHandler(schema.type);
+        if (!schema.name) {
+          throw new NormalizationError('Custom schema must have a name', { schema });
+        }
+        const customHandler = getCustomSchemaHandler(schema.name);
         if (customHandler) {
           const result = customHandler(entity, schema, entities);
           if (!isEntityID(result) && !Array.isArray(result)) {
             throw new NormalizationError('Custom handler returned invalid result', { result, expectedType: 'EntityID or EntityID[]' });
           }
+          if (!entities[schema.name]) {
+            entities[schema.name] = {};
+          }
+          entities[schema.name][result as EntityID] = entity;
           return result;
         }
-        throw new NormalizationError('No custom handler found for schema type', { schemaType: schema.type });
+        throw new NormalizationError('No custom handler found for schema type', { schemaType: schema.name });
       }
   
       if (isObjectSchemaEntity(schema)) {
@@ -120,7 +131,7 @@ export class NormalizationError extends Error {
       } else if (isArraySchemaEntity(schema)) {
         return normalizeArray(entity as unknown[], schema, entities);
       } else if (isPrimitiveSchemaEntity(schema)) {
-        throw new NormalizationError('Cannot normalize primitive value as an entity', { entity, schema });
+        return normalizePrimitive(entity, schema);
       } else {
         const exhaustiveCheck: never = schema;
         throw new NormalizationError('Unsupported schema type', { schemaType: (schema as SchemaEntity).type, entity });
@@ -183,12 +194,16 @@ export class NormalizationError extends Error {
         if (Array.isArray(result)) {
           throw new NormalizationError('Nested arrays are not supported', { index, item, schema });
         }
+        if (!isEntityID(result)) {
+          throw new NormalizationError('Array item normalization did not result in an EntityID', { index, item, result, schema });
+        }
         return result;
       } catch (error) {
         return handleError(error, { index, item, schema });
       }
     });
   }
+  
   
   function validateStringValue(value: string, schema: PrimitiveSchemaEntity & { type: 'string' }): void {
     if (schema.minLength !== undefined && value.length < schema.minLength) {
