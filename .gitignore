@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# Compiled output
+dist/
+lib/
+build/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# npm package lock
+package-lock.json
+# yarn lock file
+yarn.lock
+
+# Optional: ignore compiled JavaScript files if you're writing pure TypeScript
+# Uncomment the next line if you don't want to commit compiled JS files
+# *.js
