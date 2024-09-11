@@ -24,72 +24,10 @@ yarn add typescript-data-normalization
 
 *Note: Still not uploaded to NPM as it's work in progress*
 
-## 🛠️ Usage
+## 📚 Documentation
+- [Normalization Details](./docs/normalization-details.md)
+- [Schema Validation Details](./docs/schema-validation-details.md)
 
-### Normalization
-
-To normalize data according to a schema:
-
-```typescript
-typescript
-import { normalize, Schema } from 'typescript-data-normalization';
-
-const schema: Schema = {
-  // Define your schema here
-};
-
-const data = {
-  // Your data here
-};
-
-try {
-  const normalizedData = normalize(data, schema);
-  console.log(normalizedData);
-} catch (error) {
-  console.error('Normalization error:', error);
-}
-```
-
-### Safe Normalization (with Concurrency Control)
-
-For thread-safe normalization:
-
-```typescript
-import { safeNormalize, Schema } from 'typescript-data-normalization';
-
-const schema: Schema = {
-  // Define your schema here
-};
-
-const data = {
-  // Your data here
-};
-
-safeNormalize(data, schema)
-  .then(normalizedData => console.log(normalizedData))
-  .catch(error => console.error('Safe normalization error:', error));
-```
-
-
-### Schema Validation
-
-To validate a schema:
-
-
-```typescript
-import { validateSchema, Schema } from 'typescript-data-normalization';
-
-const schema: Schema = {
-  // Define your schema here
-};
-
-try {
-  validateSchema(schema);
-  console.log('Schema is valid');
-} catch (error) {
-  console.error('Schema validation error:', error);
-}
-```
 
 ## 🚧 Work in Progress: Denormalization
 
