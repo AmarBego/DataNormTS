@@ -1,5 +1,5 @@
 {
-  "name": "DataNormTS",
+  "name": "datanormts",
   "version": "1.0.1",
   "description": "A powerful TypeScript library for normalizing and validating complex data structures using customizable schemas",
   "main": "dist/index.js",
@@ -20,12 +20,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/amarbego/typescript-data-normalization.git"
+    "url": "https://github.com/AmarBego/DataNormTS.git"
   },
   "bugs": {
-    "url": "https://github.com/amarbego/typescript-data-normalization/issues"
+    "url": "https://github.com/AmarBego/DataNormTS/issues"
   },
-  "homepage": "https://github.com/amarbego/typescript-data-normalization#readme",
+  "homepage": "https://github.com/AmarBego/DataNormTS#readme",
   "devDependencies": {
     "@types/async-lock": "^1.4.2",
     "@types/jest": "^29.5.12",

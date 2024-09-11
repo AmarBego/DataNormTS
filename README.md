@@ -17,9 +17,9 @@ To install the library, use npm or yarn:
 
 
 ```bash
-npm install DataNormTS
+npm install datanormts
 # or
-yarn add DataNormTS
+yarn add datanormts
 ```
 
 *Note: Still not uploaded to NPM as it's work in progress*
