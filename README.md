@@ -1,41 +1,50 @@
 # TypeScript Data Normalization Library
 
-Welcome to the TypeScript Data Normalization Library! 🎉 This library is your go-to solution for handling complex data structures and schemas with ease. Whether you're working with objects, arrays, or custom types, our library offers powerful features to streamline your data processing needs.
+Welcome to the TypeScript Data Normalization Library! This powerful library provides robust tools for normalizing and validating complex data structures using customizable schemas.
 
 ## 🚀 Features
 
-- **Normalization**: Effortlessly convert complex data structures into a simplified, normalized format based on your schemas.
-- **Denormalization**: Seamlessly transform normalized data back into its original form, complete with robust error handling and validation.
-- **Custom Schema Handling**: Tailor the library to your needs with support for custom schema types and handlers.
-- **Sensitive Data Redaction**: Ensure privacy and security by redacting sensitive fields as needed.
-- **Validation**: Keep your data accurate with schema-based validation, including string length and number ranges.
-- **Error Handling**: Benefit from comprehensive error handling with detailed logging.
-- **Concurrency Control**: Maintain performance and consistency with `async-lock` for managing concurrent operations.
+- **Schema-based Normalization**: Convert complex data structures into a normalized format based on your defined schemas.
+- **Comprehensive Validation**: Ensure data integrity with thorough schema validation, including support for primitive types, objects, arrays, and custom schemas.
+- **Custom Schema Handling**: Extend functionality with support for custom schema types and handlers.
+- **Robust Error Handling**: Benefit from detailed error reporting and logging for both normalization and validation processes.
+- **Concurrency Control**: Maintain data consistency with built-in support for managing concurrent operations using `async-lock`.
+- **Type Safety**: Leverage TypeScript's type system for enhanced code reliability and developer experience.
 
-## 📅 Current Status
+## 🚧 Work in Progress: Denormalization
 
-**This library is currently a work in progress. All features are still under development, and it is not yet ready for production use. Stay tuned for updates!**
+I am currently working on a denormalization feature that will allow you to convert normalized data back into its original structure. This feature is still under development and is not yet available in the public API. Stay tuned for updates!
+
+Key points about the upcoming denormalization feature:
+- Convert normalized data back to its original nested structure
+- Maintain consistency with the normalization process
+- Handle complex scenarios like circular references
+- Provide options for partial denormalization
+
+I appreciate your patience as we work on this feature. If you have any suggestions or use cases you'd like to see supported, please open an issue on our GitHub repository.
 
 ## 📦 Installation
 
-To get started, install the library using npm or yarn:
+To install the library, use npm or yarn:
+
 
 ```bash
-npm install (W.I.P)
+npm install typescript-data-normalization
 # or
-yarn add (W.I.P)
+yarn add typescript-data-normalization
 ```
 
-*Note: Still not uploaded to NPM as it;s work in progress*
+*Note: Still not uploaded to NPM as it's work in progress*
 
 ## 🛠️ Usage
 
 ### Normalization
 
-Transform complex data into a normalized format with the `normalize` function:
+To normalize data according to a schema:
 
 ```typescript
-import { normalize, Schema } from 'your-library-name';
+typescript
+import { normalize, Schema } from 'typescript-data-normalization';
 
 const schema: Schema = {
   // Define your schema here
@@ -45,33 +54,20 @@ const data = {
   // Your data here
 };
 
-const normalizedData = normalize(data, schema);
-```
-
-### Denormalization
-
-Convert normalized data back to its original form using the `denormalize` function:
-
-```typescript
-import { denormalize, Schema, NormalizedData } from 'your-library-name';
-
-const schema: Schema = {
-  // Define your schema here
-};
-
-const normalizedData: NormalizedData = {
-  // Your normalized data here
-};
-
-const denormalizedData = denormalize(normalizedData, schema);
+try {
+  const normalizedData = normalize(data, schema);
+  console.log(normalizedData);
+} catch (error) {
+  console.error('Normalization error:', error);
+}
 ```
 
 ### Safe Normalization (with Concurrency Control)
 
-Manage concurrent normalization operations with `safeNormalize`:
+For thread-safe normalization:
 
 ```typescript
-import { safeNormalize, Schema } from 'your-library-name';
+import { safeNormalize, Schema } from 'typescript-data-normalization';
 
 const schema: Schema = {
   // Define your schema here
@@ -82,66 +78,68 @@ const data = {
 };
 
 safeNormalize(data, schema)
-  .then(normalizedData => {
-    // Use your normalized data here
-  })
-  .catch(error => {
-    // Handle errors here
-  });
+  .then(normalizedData => console.log(normalizedData))
+  .catch(error => console.error('Safe normalization error:', error));
 ```
 
-### Safe Denormalization (with Concurrency Control)
 
-Ensure data integrity with concurrent denormalization using `safeDenormalize`:
+### Schema Validation
+
+To validate a schema:
+
 
 ```typescript
-import { safeDenormalize, Schema, NormalizedData } from 'your-library-name';
+import { validateSchema, Schema } from 'typescript-data-normalization';
 
 const schema: Schema = {
   // Define your schema here
 };
 
-const normalizedData: NormalizedData = {
-  // Your normalized data here
-};
-
-safeDenormalize(normalizedData, schema)
-  .then(denormalizedData => {
-    // Use your denormalized data here
-  })
-  .catch(error => {
-    // Handle errors here
-  });
+try {
+  validateSchema(schema);
+  console.log('Schema is valid');
+} catch (error) {
+  console.error('Schema validation error:', error);
+}
 ```
+
 
 ## 📖 Normalization Details
 
-The `normalize` function adapts to various schema types, including objects, arrays, and custom schemas. It ensures data validity with built-in error handling.
+The library supports various schema types:
+
+- **Objects**: Normalize complex nested objects.
+- **Arrays**: Handle arrays of entities.
+- **Primitives**: Validate and normalize strings, numbers, and booleans.
+- **Custom**: Extend functionality with custom schema types.
 
 ### Error Handling
 
-The library provides detailed error handling for normalization, including custom error types and comprehensive logging.
+The library provides detailed error messages for various scenarios:
+
+- Schema validation errors
+- Type mismatches
+- Missing required properties
+- Invalid primitive values (e.g., string length, number range)
 
 ### Concurrency Control
 
-With `async-lock`, `safeNormalize` manages concurrent operations effectively, ensuring that multiple processes do not interfere with each other.
+The `safeNormalize` function uses `async-lock` to ensure thread-safe operations when normalizing data concurrently.
 
-## 🔄 Denormalization Details
+## 🔍 Validation Details
 
-The `denormalize` function reverses the normalization process, handling different schema types and performing thorough validation.
+The schema validation process includes:
 
-### Error Handling
-
-Denormalization errors are categorized and logged in detail, including validation and type mismatch issues.
-
-### Concurrency Control
-
-`safeDenormalize` leverages `async-lock` for concurrent operations, maintaining data integrity and consistency.
+- Checking for valid schema types
+- Validating object properties
+- Ensuring array items conform to the schema
+- Verifying primitive value constraints (e.g., string length, number range)
+- Custom schema validation
 
 ## 🤝 Contributing
 
-We welcome contributions to make this library even better! If you have suggestions, bug reports, or want to contribute, please open an issue or submit a pull request.
+Contributions are welcome! If you have suggestions, bug reports, or want to contribute code, please open an issue or submit a pull request on our GitHub repository.
 
 ## 📜 License
 
-This library is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more information.
+This library is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.

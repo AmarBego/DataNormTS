@@ -85,6 +85,7 @@ function normalizeCustomEntity(entity: unknown, schema: CustomSchemaEntity, enti
     }
     entities[schema.name][result] = entity;
   }
+  logger.debug('Custom entity normalization completed', { schema: schema.name });
 
   return result;
 }

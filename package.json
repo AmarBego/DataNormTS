@@ -1,4 +1,7 @@
 {
+  "name": "typescript-data-normalization",
+  "version": "1.0.0",
+  "description": "A powerful TypeScript library for normalizing and validating complex data structures using customizable schemas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -6,10 +9,23 @@
     "test": "jest --verbose",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "typescript",
+    "normalization",
+    "validation",
+    "schema",
+    "data-structure"
+  ],
+  "author": "Amar Begovic",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amarbego/typescript-data-normalization.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amarbego/typescript-data-normalization/issues"
+  },
+  "homepage": "https://github.com/amarbego/typescript-data-normalization#readme",
   "devDependencies": {
     "@types/async-lock": "^1.4.2",
     "@types/jest": "^29.5.12",
@@ -19,8 +35,14 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "async-lock": "^1.4.1",
-    "crypto": "^1.0.1",
-    "ts-node": "^10.9.2"
+    "async-lock": "^1.4.1"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
