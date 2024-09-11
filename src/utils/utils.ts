@@ -1,3 +1,6 @@
+import crypto from 'crypto';
+import { Schema } from '../types';
+
 type SensitiveFieldsConfig = { [entityName: string]: Set<string> };
 
 let sensitiveFields: SensitiveFieldsConfig = {
@@ -48,4 +51,23 @@ export function redactSensitiveFields(obj: { [key: string]: any }, entityName: s
     result[key] = sensitiveSet.has(key) ? '[REDACTED]' : value;
   }
   return result;
+}
+
+export function memoize<T extends (...args: any[]) => any>(fn: T): T {
+  const cache = new Map();
+  return ((...args: any[]) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  }) as T;
+}
+
+export function generateLockKey(data: unknown, schema: Schema): string {
+  const dataHash = crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
+  const schemaHash = crypto.createHash('sha256').update(JSON.stringify(schema)).digest('hex');
+  return `${dataHash}|${schemaHash}`;
 }

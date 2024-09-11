@@ -8,7 +8,7 @@ import {
     EntityID,
     PrimitiveType
   } from './types';
-  import { redactSensitiveFields } from './utils';
+  import { redactSensitiveFields } from './utils/utils';
   import { getCustomSchemaHandler } from './types';
   import { logger } from './logger';
   import AsyncLock = require('async-lock');
