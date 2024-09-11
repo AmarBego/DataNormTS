@@ -1,9 +1,15 @@
 import { normalize } from '../../src/normalizers/normalizer';
 import { Schema, NormalizedData, registerCustomSchemaHandler, clearCustomSchemaHandlers } from '../../src/types';
+import { logger } from '../../src/logger';
 
 describe('custom schema handlers', () => {
   beforeEach(() => {
     clearCustomSchemaHandlers();
+    logger.setSilent(true);
+  });
+
+  afterEach(() => {
+    logger.setSilent(false);
   });
 
   it('should handle custom schema type with single entity', () => {

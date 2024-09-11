@@ -41,35 +41,48 @@ export function normalizeEntity(entity: unknown, schema: SchemaEntity, entities:
  * @throws {NormalizationError} If the entity is invalid for the custom schema or if a required property is missing.
  */
 function normalizeCustomEntity(entity: unknown, schema: CustomSchemaEntity, entities: NormalizedData['entities']): EntityID | EntityID[] {
+
   if (!schema.name) {
     throw new NormalizationError('Custom schema must have a name', { schema });
   }
+
   const customHandler = getCustomSchemaHandler(schema.name);
   if (!customHandler) {
+    logger.error('Custom handler not found', { schemaName: schema.name });
     throw new NormalizationError('No custom handler found for schema type', { schemaType: schema.name });
   }
-  const result = customHandler(entity, schema, entities);
-  
-  if (Array.isArray(entity)) {
-    if (!Array.isArray(result) || !result.every(isEntityID)) {
-      throw new NormalizationError('Custom handler must return an array of EntityIDs for array input', { result, entity, schema });
-    }
-  } else if (!isEntityID(result)) {
-    throw new NormalizationError('Custom handler must return an EntityID for non-array input', { result, entity, schema });
-  }
 
-  // Store the result in entities
+  const result = customHandler(entity, schema, entities);
+
   if (!entities[schema.name]) {
     entities[schema.name] = {};
   }
-
-  if (Array.isArray(result)) {
+  if (Array.isArray(entity)) {
+    if (!Array.isArray(result)) {
+      throw new NormalizationError('Custom handler must return an array for array input', { result, entity, schema });
+    }
+    if (!result.every(isEntityID)) {
+      throw new NormalizationError('Custom handler must return an array of EntityIDs for array input', { result, entity, schema });
+    }
+    if (result.length !== entity.length) {
+      throw new NormalizationError('Custom handler must return an array of EntityIDs for array input', { result, entity, schema });
+    }
     result.forEach((id, index) => {
-      if (Array.isArray(entity)) {
-        entities[schema.name][id] = entity[index];
+      if (typeof id !== 'string' && typeof id !== 'number') {
+        throw new NormalizationError('EntityID must be a string or number', { id, index, entity, schema });
       }
+      entities[schema.name][id] = entity[index];
     });
   } else {
+    if (Array.isArray(result)) {
+      throw new NormalizationError('Custom handler must return a single EntityID for non-array input', { result, entity, schema });
+    }
+    if (!isEntityID(result)) {
+      throw new NormalizationError('Custom handler must return an EntityID for non-array input', { result, entity, schema });
+    }
+    if (typeof result !== 'string' && typeof result !== 'number') {
+      throw new NormalizationError('EntityID must be a string or number', { result, entity, schema });
+    }
     entities[schema.name][result] = entity;
   }
 

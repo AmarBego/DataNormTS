@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { createHash } from 'crypto';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -19,6 +20,7 @@ interface LoggerOptions {
   batchSize: number;
   maxFileSize: number; // in bytes
   maxFiles: number;
+  silent: boolean;
 }
 
 class Logger {
@@ -26,6 +28,8 @@ class Logger {
   private logQueue: LogEntry[] = [];
   private isProcessing = false;
   private currentFileSize = 0;
+  private logPromises: Promise<void>[] = [];
+  private capturedLogs: string[] = [];
 
   constructor(options: Partial<LoggerOptions> = {}) {
     this.options = {
@@ -36,6 +40,7 @@ class Logger {
       batchSize: 10,
       maxFileSize: 5 * 1024 * 1024, // 5MB
       maxFiles: 5,
+      silent: false,
       ...options
     };
 
@@ -81,9 +86,6 @@ class Logger {
       console.error('Failed to write to log file:', error);
       // Fallback to console logging if file writing fails
       console.error('Fallback log entry:', formattedEntry);
-      
-      // Attempt to use an alternative logging method
-      this.fallbackLogging(formattedEntry);
     }
   }
 
@@ -106,11 +108,6 @@ class Logger {
     } catch (error) {
       console.error('Failed to rotate log file:', error);
     }
-  }
-
-  private fallbackLogging(formattedEntry: string): void {
-    // For now, we'll just ensure it's logged to console
-    console.error('Fallback logging:', formattedEntry);
   }
 
   private logToConsole(entry: LogEntry): void {
@@ -139,11 +136,13 @@ class Logger {
     this.isProcessing = true;
     const batch = this.logQueue.splice(0, this.options.batchSize);
 
-    for (const entry of batch) {
+    const batchPromises = batch.map(async (entry) => {
       const formattedEntry = this.formatLogEntry(entry);
       this.logToConsole(entry);
       await this.writeToFile(formattedEntry);
-    }
+    });
+
+    await Promise.all(batchPromises);
 
     this.isProcessing = false;
     if (this.logQueue.length > 0) {
@@ -153,10 +152,13 @@ class Logger {
 
   private enqueueLog(entry: LogEntry): void {
     this.logQueue.push(entry);
-    if (this.options.asyncLogging) {
-      setImmediate(() => this.processLogQueue());
+    if (this.options.silent) {
+      this.capturedLogs.push(this.formatLogEntry(entry));
     } else {
-      this.processLogQueue();
+      const logPromise = this.options.asyncLogging
+        ? new Promise<void>((resolve) => setImmediate(() => this.processLogQueue().then(resolve)))
+        : this.processLogQueue();
+      this.logPromises.push(logPromise);
     }
   }
 
@@ -182,8 +184,42 @@ class Logger {
   error(message: string, context?: Record<string, unknown>): void {
     this.log('error', message, context);
   }
+
+  async flush(): Promise<void> {
+    await Promise.all(this.logPromises);
+    this.logPromises = [];
+  }
+
+  setSilent(silent: boolean): void {
+    this.options.silent = silent;
+    if (!silent) {
+      this.flushCapturedLogs();
+    }
+  }
+
+  private flushCapturedLogs(): void {
+    this.capturedLogs.forEach(log => console.log(log));
+    this.capturedLogs = [];
+  }
+
+  getCapturedLogs(): string[] {
+    return this.capturedLogs;
+  }
+
+  clearCapturedLogs(): void {
+    this.capturedLogs = [];
+  }
+
+  setLogLevel(level: LogLevel): void {
+    this.options.minLevel = level;
+  }
+
+  getLogLevel(): LogLevel {
+    return this.options.minLevel;
+  }
 }
 
+// Create a singleton instance
 export const logger = new Logger({
   minLevel: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
   logToFile: process.env.NODE_ENV === 'production',
@@ -193,3 +229,5 @@ export const logger = new Logger({
   maxFileSize: 5 * 1024 * 1024, // 5MB
   maxFiles: 5
 });
+
+export const flushLogs = () => logger.flush();

@@ -1,10 +1,15 @@
 import { normalize } from '../../src/normalizers/normalizer';
 import { Schema, clearCustomSchemaHandlers, registerCustomSchemaHandler } from '../../src/types';
 import { NormalizationError } from '../../src/errors';
-
+import { logger } from '../../src/logger';
 describe('normalize edge cases', () => {
   beforeEach(() => {
     clearCustomSchemaHandlers();
+    logger.setSilent(true);
+  });
+
+  afterEach(() => {
+    logger.setSilent(false);
   });
 
   it('should handle deeply nested structures', () => {
@@ -82,38 +87,45 @@ describe('normalize edge cases', () => {
     expect(Object.keys(result.entities.user)).toHaveLength(10000);
   });
 
-  it('should handle invalid custom handlers', () => {
-    const invalidSingleHandler = jest.fn().mockReturnValue({ notAnEntityID: true });
-    const invalidArrayHandler = jest.fn().mockReturnValue(['not', 'an', 'array', 'of', 'EntityIDs']);
-    
-    registerCustomSchemaHandler('invalidSingleCustom', invalidSingleHandler);
-    registerCustomSchemaHandler('invalidArrayCustom', invalidArrayHandler);
+  describe('normalize edge cases with invalid custom handlers', () => {
+    beforeEach(() => {
+      clearCustomSchemaHandlers();
+    });
   
-    const singleSchema: Schema = {
-      custom: {
-        type: 'custom',
-        name: 'invalidSingleCustom'
-      }
-    };
+    it('should handle invalid custom handler for non-array input', () => {
+      const invalidSingleHandler = jest.fn().mockReturnValue({ notAnEntityID: true });
+      registerCustomSchemaHandler('invalidSingleCustom', invalidSingleHandler);
   
-    const arraySchema: Schema = {
-      custom: {
-        type: 'custom',
-        name: 'invalidArrayCustom'
-      }
-    };
+      const singleSchema: Schema = {
+        custom: {
+          type: 'custom',
+          name: 'invalidSingleCustom'
+        }
+      };
   
-    const singleData = { id: 'test' };
-    const arrayData = [{ id: 'test1' }, { id: 'test2' }];
+      const singleData = { id: 'test' };
   
-    // Test single data case
-    expect(() => normalize(singleData, singleSchema)).toThrow(NormalizationError);
-    expect(() => normalize(singleData, singleSchema)).toThrow('Custom handler must return an EntityID for non-array input');
-    expect(invalidSingleHandler).toHaveBeenCalled();
-
-    // Test array data case
-    expect(() => normalize(arrayData, arraySchema)).toThrow(NormalizationError);
-    expect(() => normalize(arrayData, arraySchema)).toThrow('Custom handler must return an array of EntityIDs for array input');
-    expect(invalidArrayHandler).toHaveBeenCalled();
+      expect(() => normalize(singleData, singleSchema)).toThrow(NormalizationError);
+      expect(() => normalize(singleData, singleSchema)).toThrow('Custom handler must return an EntityID for non-array input');
+      expect(invalidSingleHandler).toHaveBeenCalled();
+    });
+  
+    it('should handle invalid custom handler for array input', () => {
+      const invalidArrayHandler = jest.fn().mockReturnValue(['not', 'an', 'array', 'of', 'EntityIDs']);
+      registerCustomSchemaHandler('invalidArrayCustom', invalidArrayHandler);
+  
+      const arraySchema: Schema = {
+        custom: {
+          type: 'custom',
+          name: 'invalidArrayCustom'
+        }
+      };
+  
+      const arrayData = [{ id: 'test1' }, { id: 'test2' }];
+  
+      expect(() => normalize(arrayData, arraySchema)).toThrow(NormalizationError);
+      expect(() => normalize(arrayData, arraySchema)).toThrow('Custom handler must return an array of EntityIDs for array input');
+      expect(invalidArrayHandler).toHaveBeenCalled();
+    });
   });
 });
