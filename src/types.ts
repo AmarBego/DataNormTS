@@ -1,16 +1,20 @@
+import { SchemaValidationError } from './errors';
+export { SchemaValidationError };
+
 export type PrimitiveType = 'string' | 'number' | 'boolean';
 export type SchemaType = 'object' | 'array' | PrimitiveType | 'custom';
 
 export interface BaseSchemaEntity {
   type: SchemaType;
   name?: string;
+  optional?: boolean;
   [key: string]: unknown;
 }
 
 export interface ObjectSchemaEntity extends BaseSchemaEntity {
   type: 'object';
-  name: string;
-  properties: Schema;
+  name?: string;
+  properties: Record<string, SchemaEntity>;
 }
 
 export interface ArraySchemaEntity extends BaseSchemaEntity {
@@ -18,13 +22,21 @@ export interface ArraySchemaEntity extends BaseSchemaEntity {
   items: SchemaEntity;
 }
 
-export interface PrimitiveSchemaEntity extends BaseSchemaEntity {
-  type: PrimitiveType;
+export interface StringSchemaEntity extends BaseSchemaEntity {
+  type: 'string';
   minLength?: number;
   maxLength?: number;
   pattern?: string;
+}
+
+export interface NumberSchemaEntity extends BaseSchemaEntity {
+  type: 'number';
   minimum?: number;
   maximum?: number;
+}
+
+export interface BooleanSchemaEntity extends BaseSchemaEntity {
+  type: 'boolean';
 }
 
 export interface CustomSchemaEntity extends BaseSchemaEntity {
@@ -32,11 +44,11 @@ export interface CustomSchemaEntity extends BaseSchemaEntity {
   name: string;
 }
 
+export type PrimitiveSchemaEntity = StringSchemaEntity | NumberSchemaEntity | BooleanSchemaEntity;
+
 export type SchemaEntity = ObjectSchemaEntity | ArraySchemaEntity | PrimitiveSchemaEntity | CustomSchemaEntity;
 
-export interface Schema {
-  [key: string]: SchemaEntity;
-}
+export type Schema = Record<string, SchemaEntity>;
 
 export type EntityID = string | number;
 

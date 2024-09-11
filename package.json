@@ -3,7 +3,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "jest --verbose",
     "prepublishOnly": "npm run build"
   },
   "keywords": [],
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "async-lock": "^1.4.1",
+    "crypto": "^1.0.1",
     "ts-node": "^10.9.2"
   }
 }
