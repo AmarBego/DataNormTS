@@ -1,4 +1,4 @@
-import { validateSchema } from '../src/schemaValidator';
+import { validateSchema } from '../src/validators/schemaValidator';
 import { Schema, SchemaEntity } from '../src/types';
 import { SchemaValidationError } from '../src/errors';
 

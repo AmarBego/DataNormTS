@@ -1,8 +1,15 @@
 import { PrimitiveSchemaEntity, StringSchemaEntity, NumberSchemaEntity } from '../types';
 import { NormalizationError } from '../errors';
-import { isStringSchemaEntity, isNumberSchemaEntity } from './utils';
+import { isStringSchemaEntity, isNumberSchemaEntity } from './normalizationUtils';
 
-
+/**
+ * Normalizes a primitive value based on the provided schema.
+ * 
+ * @param value - The value to normalize.
+ * @param schema - The schema to use for normalization.
+ * @returns The normalized value.
+ * @throws {NormalizationError} If the value does not match the schema type or fails additional validation.
+ */
 export function normalizePrimitive(value: unknown, schema: PrimitiveSchemaEntity): unknown {
   if (typeof value !== schema.type) {
     throw new NormalizationError('Type mismatch', { expectedType: schema.type, actualType: typeof value, value, schema });
@@ -26,6 +33,13 @@ export function normalizePrimitive(value: unknown, schema: PrimitiveSchemaEntity
   return value;
 }
 
+/**
+ * Validates a string value against a StringSchemaEntity.
+ * 
+ * @param value - The string value to validate.
+ * @param schema - The StringSchemaEntity to use for validation.
+ * @throws {NormalizationError} If the string value fails validation.
+ */
 function validateStringValue(value: string, schema: StringSchemaEntity): void {
   if (schema.minLength !== undefined && value.length < schema.minLength) {
     throw new NormalizationError('String length below minimum', { value, minLength: schema.minLength, actualLength: value.length, schema });
@@ -44,6 +58,13 @@ function validateStringValue(value: string, schema: StringSchemaEntity): void {
   }
 }
 
+/**
+ * Validates a number value against a NumberSchemaEntity.
+ * 
+ * @param value - The number value to validate.
+ * @param schema - The NumberSchemaEntity to use for validation.
+ * @throws {NormalizationError} If the number value fails validation.
+ */
 function validateNumberValue(value: number, schema: NumberSchemaEntity): void {
   if (schema.minimum !== undefined && value < schema.minimum) {
     throw new NormalizationError('Number below minimum', { value, minimum: schema.minimum, schema });

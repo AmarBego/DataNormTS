@@ -109,7 +109,6 @@ class Logger {
   }
 
   private fallbackLogging(formattedEntry: string): void {
-    // This method can be extended to use alternative logging methods
     // For now, we'll just ensure it's logged to console
     console.error('Fallback logging:', formattedEntry);
   }

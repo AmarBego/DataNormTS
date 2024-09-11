@@ -1,13 +1,22 @@
 import { SchemaEntity, NormalizedData, EntityID, CustomSchemaEntity } from '../types';
 import { NormalizationError } from '../errors';
 import { getCustomSchemaHandler } from '../types';
-import { isEntityID, isCustomSchemaEntity, isObjectSchemaEntity, isArraySchemaEntity, isPrimitiveSchemaEntity } from './utils';
+import { isEntityID, isCustomSchemaEntity, isObjectSchemaEntity, isArraySchemaEntity, isPrimitiveSchemaEntity } from './normalizationUtils';
 import { normalizeObject } from './objectNormalizer';
 import { normalizeArray } from './arrayNormalizer';
 import { normalizePrimitive } from './primitiveNormalizer';
 import { logger } from '../logger';
 
 
+/**
+ * Normalizes the given entity according to the provided schema.
+ * 
+ * @param entity - The entity to normalize.
+ * @param schema - The schema to use for normalization.
+ * @param entities - The collection of normalized entities.
+ * @returns The ID of the normalized entity if it has an ID, otherwise the normalized entity itself.
+ * @throws {NormalizationError} If the entity is invalid for the schema or if a required property is missing.
+ */
 export function normalizeEntity(entity: unknown, schema: SchemaEntity, entities: NormalizedData['entities']): EntityID | EntityID[] | unknown {
   try {
     if (isCustomSchemaEntity(schema)) {
@@ -27,6 +36,15 @@ export function normalizeEntity(entity: unknown, schema: SchemaEntity, entities:
   }
 }
 
+/**
+ * Normalizes a custom entity based on the provided schema and stores it in the entities collection.
+ * 
+ * @param entity - The entity to normalize.
+ * @param schema - The schema to use for normalization.
+ * @param entities - The collection of normalized entities.
+ * @returns The ID of the normalized entity if it has an ID, otherwise the normalized entity itself.
+ * @throws {NormalizationError} If the entity is invalid for the custom schema or if a required property is missing.
+ */
 function normalizeCustomEntity(entity: unknown, schema: CustomSchemaEntity, entities: NormalizedData['entities']): EntityID | EntityID[] {
   console.log('Normalizing custom entity:', { entity, schema });
   if (!schema.name) {
@@ -65,6 +83,14 @@ function normalizeCustomEntity(entity: unknown, schema: CustomSchemaEntity, enti
   return result;
 }
 
+/**
+ * Handles errors that occur during normalization.
+ * 
+ * @param error - The error that occurred.
+ * @param context - The context in which the error occurred.
+ * @returns Never.
+ * @throws {NormalizationError} If the error is an instance of NormalizationError.
+ */
 function handleError(error: unknown, context: Record<string, unknown>): never {
   if (error instanceof NormalizationError) {
     logger.error('Normalization error:', { message: error.message, context: { ...error.context, ...context } });

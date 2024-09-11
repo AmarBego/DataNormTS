@@ -2,6 +2,15 @@ import { ObjectSchemaEntity, NormalizedData, EntityID } from '../types';
 import { NormalizationError } from '../errors';
 import { normalizeEntity } from './customNormalizer';
 
+/**
+ * Normalizes an object entity based on the provided schema and stores it in the entities collection.
+ * 
+ * @param entity - The entity to normalize.
+ * @param schema - The schema to use for normalization.
+ * @param entities - The collection of normalized entities.
+ * @returns The ID of the normalized entity if it has an ID, otherwise the normalized entity itself.
+ * @throws {NormalizationError} If the entity is invalid for the object schema or if a required property is missing.
+ */
 export function normalizeObject(entity: Record<string, unknown>, schema: ObjectSchemaEntity, entities: NormalizedData['entities']): EntityID | Record<string, unknown> {
   if (!entity || typeof entity !== 'object' || Array.isArray(entity)) {
     throw new NormalizationError('Invalid entity for object schema', { expectedType: 'object', receivedType: typeof entity });

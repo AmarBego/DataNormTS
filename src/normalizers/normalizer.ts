@@ -1,5 +1,5 @@
 import { Schema, NormalizedData, SchemaEntity, EntityID } from '../types';
-import { validateSchema } from '../schemaValidator';
+import { validateSchema } from '../validators/schemaValidator';
 import { memoize } from '../utils/utils';
 import { SchemaValidationError, NormalizationError } from '../errors';
 import { normalizeEntity } from './customNormalizer';
@@ -7,8 +7,19 @@ import { logger } from '../logger';
 import AsyncLock = require('async-lock');
 import { generateLockKey } from '../utils/utils';
 
+/**
+ * Memoizes the validateSchema function to improve performance.
+ */
 const memoizedValidateSchema = memoize(validateSchema);
 
+/**
+ * Normalizes the given data according to the provided schema.
+ * 
+ * @param data - The data to normalize.
+ * @param schema - The schema to use for normalization.
+ * @returns The normalized data.
+ * @throws {NormalizationError} If the data is invalid or fails to match the schema.
+ */
 export function normalize(data: unknown, schema: Schema): NormalizedData {
   try {
     validateSchema(schema);
@@ -40,8 +51,19 @@ export function normalize(data: unknown, schema: Schema): NormalizedData {
   }
 }
 
+/**
+ * Creates a lock for normalization operations to ensure thread safety.
+ */
 const normalizationLock = new AsyncLock();
 
+/**
+ * Performs safe normalization of data using a lock to prevent concurrent modifications.
+ * 
+ * @param data - The data to normalize.
+ * @param schema - The schema to use for normalization.
+ * @returns A promise that resolves to the normalized data.
+ * @throws {NormalizationError} If the data is invalid or fails to match the schema.
+ */
 export async function safeNormalize(data: unknown, schema: Schema): Promise<NormalizedData> {
   const lockKey = generateLockKey(data, schema);
 
