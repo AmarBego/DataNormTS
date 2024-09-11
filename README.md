@@ -11,18 +11,6 @@ Welcome to the TypeScript Data Normalization Library! This powerful library prov
 - **Concurrency Control**: Maintain data consistency with built-in support for managing concurrent operations using `async-lock`.
 - **Type Safety**: Leverage TypeScript's type system for enhanced code reliability and developer experience.
 
-## 🚧 Work in Progress: Denormalization
-
-I am currently working on a denormalization feature that will allow you to convert normalized data back into its original structure. This feature is still under development and is not yet available in the public API. Stay tuned for updates!
-
-Key points about the upcoming denormalization feature:
-- Convert normalized data back to its original nested structure
-- Maintain consistency with the normalization process
-- Handle complex scenarios like circular references
-- Provide options for partial denormalization
-
-I appreciate your patience as we work on this feature. If you have any suggestions or use cases you'd like to see supported, please open an issue on our GitHub repository.
-
 ## 📦 Installation
 
 To install the library, use npm or yarn:
@@ -103,6 +91,17 @@ try {
 }
 ```
 
+## 🚧 Work in Progress: Denormalization
+
+I am currently working on a denormalization feature that will allow you to convert normalized data back into its original structure. This feature is still under development and is not yet available in the public API. Stay tuned for updates!
+
+Key points about the upcoming denormalization feature:
+- Convert normalized data back to its original nested structure
+- Maintain consistency with the normalization process
+- Handle complex scenarios like circular references
+- Provide options for partial denormalization
+
+I appreciate your patience as we work on this feature. If you have any suggestions or use cases you'd like to see supported, please open an issue on our GitHub repository.
 
 ## 📖 Normalization Details
 
