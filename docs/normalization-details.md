@@ -24,7 +24,7 @@ Normalizes the given data according to the provided schema.
 
 #### Usage:
 ```typescript
-import { normalize, Schema } from '@normalizers';
+import { normalize, Schema } from 'DataNormTS';
 
 const schema: Schema = {
   user: {
@@ -68,7 +68,7 @@ Performs safe normalization of data using a lock to prevent concurrent modificat
 
 #### Usage:
 ```typescript
-import { safeNormalize, Schema } from '@normalizers';
+import { safeNormalize, Schema } from 'DataNormTS';
 
 const schema: Schema = {
   // Define your schema here
@@ -88,7 +88,7 @@ To validate a schema:
 
 
 ```typescript
-import { validateSchema, Schema } from 'typescript-data-normalization';
+import { validateSchema, Schema } from 'DataNormTS';
 
 const schema: Schema = {
   // Define your schema here

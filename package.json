@@ -1,6 +1,6 @@
 {
-  "name": "typescript-data-normalization",
-  "version": "1.0.0",
+  "name": "DataNormTS",
+  "version": "1.0.1",
   "description": "A powerful TypeScript library for normalizing and validating complex data structures using customizable schemas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -20,7 +20,7 @@ Validates the provided schema to ensure it meets the required structure and cons
 
 #### Usage:
 ```typescript
-import { validateSchema, Schema } from '@validators';
+import { validateSchema, Schema } from 'DataNormTS';
 
 const schema: Schema = {
   user: {
@@ -59,7 +59,7 @@ Validates a string value against a StringSchemaEntity.
 
 #### Usage:
 ```typescript
-import { validateStringValue, StringSchemaEntity } from '@validators';
+import { validateStringValue, StringSchemaEntity } from 'DataNormTS';
 
 const stringSchema: StringSchemaEntity = {
   type: 'string',
@@ -92,7 +92,7 @@ Validates a number value against a NumberSchemaEntity.
 
 #### Usage:
 ```typescript
-import { validateNumberValue, NumberSchemaEntity } from '@validators';
+import { validateNumberValue, NumberSchemaEntity } from 'DataNormTS';
 
 const numberSchema: NumberSchemaEntity = {
   type: 'number',

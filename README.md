@@ -17,9 +17,9 @@ To install the library, use npm or yarn:
 
 
 ```bash
-npm install typescript-data-normalization
+npm install DataNormTS
 # or
-yarn add typescript-data-normalization
+yarn add DataNormTS
 ```
 
 *Note: Still not uploaded to NPM as it's work in progress*
