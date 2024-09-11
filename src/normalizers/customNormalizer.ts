@@ -7,7 +7,6 @@ import { normalizeArray } from './arrayNormalizer';
 import { normalizePrimitive } from './primitiveNormalizer';
 import { logger } from '../logger';
 
-
 /**
  * Normalizes the given entity according to the provided schema.
  * 
@@ -18,21 +17,17 @@ import { logger } from '../logger';
  * @throws {NormalizationError} If the entity is invalid for the schema or if a required property is missing.
  */
 export function normalizeEntity(entity: unknown, schema: SchemaEntity, entities: NormalizedData['entities']): EntityID | EntityID[] | unknown {
-  try {
-    if (isCustomSchemaEntity(schema)) {
-      return normalizeCustomEntity(entity, schema, entities);
-    } else if (isObjectSchemaEntity(schema)) {
-      return normalizeObject(entity as Record<string, unknown>, schema, entities);
-    } else if (isArraySchemaEntity(schema)) {
-      return normalizeArray(entity as unknown[], schema, entities);
-    } else if (isPrimitiveSchemaEntity(schema)) {
-      return normalizePrimitive(entity, schema);
-    } else {
-      const exhaustiveCheck: never = schema;
-      throw new NormalizationError('Unsupported schema type', { schemaType: (schema as SchemaEntity).type, entity });
-    }
-  } catch (error) {
-    return handleError(error, { entity, schema, entities });
+  if (isCustomSchemaEntity(schema)) {
+    return normalizeCustomEntity(entity, schema, entities);
+  } else if (isObjectSchemaEntity(schema)) {
+    return normalizeObject(entity as Record<string, unknown>, schema, entities);
+  } else if (isArraySchemaEntity(schema)) {
+    return normalizeArray(entity as unknown[], schema, entities);
+  } else if (isPrimitiveSchemaEntity(schema)) {
+    return normalizePrimitive(entity, schema);
+  } else {
+    const exhaustiveCheck: never = schema;
+    throw new NormalizationError('Unsupported schema type', { schemaType: (schema as SchemaEntity).type, entity });
   }
 }
 
@@ -46,7 +41,6 @@ export function normalizeEntity(entity: unknown, schema: SchemaEntity, entities:
  * @throws {NormalizationError} If the entity is invalid for the custom schema or if a required property is missing.
  */
 function normalizeCustomEntity(entity: unknown, schema: CustomSchemaEntity, entities: NormalizedData['entities']): EntityID | EntityID[] {
-  console.log('Normalizing custom entity:', { entity, schema });
   if (!schema.name) {
     throw new NormalizationError('Custom schema must have a name', { schema });
   }
@@ -55,14 +49,13 @@ function normalizeCustomEntity(entity: unknown, schema: CustomSchemaEntity, enti
     throw new NormalizationError('No custom handler found for schema type', { schemaType: schema.name });
   }
   const result = customHandler(entity, schema, entities);
-  console.log('Custom handler result:', result);
   
   if (Array.isArray(entity)) {
     if (!Array.isArray(result) || !result.every(isEntityID)) {
-      throw new NormalizationError('Custom handler must return an array of EntityIDs for array input', { result });
+      throw new NormalizationError('Custom handler must return an array of EntityIDs for array input', { result, entity, schema });
     }
   } else if (!isEntityID(result)) {
-    throw new NormalizationError('Custom handler must return an EntityID for non-array input', { result });
+    throw new NormalizationError('Custom handler must return an EntityID for non-array input', { result, entity, schema });
   }
 
   // Store the result in entities
@@ -82,7 +75,6 @@ function normalizeCustomEntity(entity: unknown, schema: CustomSchemaEntity, enti
 
   return result;
 }
-
 /**
  * Handles errors that occur during normalization.
  * 
