@@ -137,16 +137,12 @@ function normalizePrimitive(value: unknown, schema: PrimitiveSchemaEntity): unkn
 Normalizes a primitive value based on the provided schema.
 
 ## Custom Schema Handling
+
 The `normalizers` module supports custom schema types through the use of custom schema handlers. You can register custom handlers using the `registerCustomSchemaHandler` function from the `datanormts` module. here is a quick example:
 
 ```typescript
 import { normalize, registerCustomSchemaHandler, Schema } from 'datanormts';
-=======
-The `@normalizers` module supports custom schema types through the use of custom schema handlers. You can register custom handlers using the `registerCustomSchemaHandler` function from the `datanormts` module.
-
-```typescript
 import { registerCustomSchemaHandler } from 'datanormts';
->>>>>>> aa3d30d9f9a5d161fc93808c058f19eba64e592a
 
 registerCustomSchemaHandler('customEntity', (entity, schema, entities) => {
   const id = (entity as any).id;
