@@ -138,14 +138,66 @@ Normalizes a primitive value based on the provided schema.
 
 ## Custom Schema Handling
 
+<<<<<<< HEAD
+The `normalizers` module supports custom schema types through the use of custom schema handlers. You can register custom handlers using the `registerCustomSchemaHandler` function from the `datanormts` module. here is a quick example:
+
+```typescript
+import { normalize, registerCustomSchemaHandler, Schema } from 'datanormts';
+=======
 The `@normalizers` module supports custom schema types through the use of custom schema handlers. You can register custom handlers using the `registerCustomSchemaHandler` function from the `datanormts` module.
 
 ```typescript
 import { registerCustomSchemaHandler } from 'datanormts';
+>>>>>>> aa3d30d9f9a5d161fc93808c058f19eba64e592a
 
-registerCustomSchemaHandler('customType', (entity, schema, entities) => {
-  // Your custom normalization logic here
+registerCustomSchemaHandler('customEntity', (entity, schema, entities) => {
+  const id = (entity as any).id;
+  if (!entities[schema.name]) {
+    entities[schema.name] = {};
+  }
+  entities[schema.name][id] = entity;
+  return id;
 });
+
+const schema: Schema = {
+  customEntity: {
+    type: 'custom',
+    name: 'customEntity',
+    properties: {
+      id: { type: 'string' },
+      someField: { type: 'string' }
+    }
+  }
+};
+
+const data = {
+  id: '1',
+  someField: 'example'
+};
+
+const normalizedData = normalize(data, schema);
+
+console.log('Normalized Data:', JSON.stringify(normalizedData, null, 2));
+
+```
+
+this will normalize the data and store it in the entities collection. here is the console log output:
+```bash
+Normalized Data: {
+  "entities": {
+    "customEntity": {
+      "1": {
+        "id": "1",
+        "someField": "example"
+      }
+    }
+  },
+  "result": "1"
+}
+[2024-09-12T18:20:41.358Z] DEBUG: Custom entity normalization completed
+Context: {
+  "schema": "customEntity"
+}
 ```
 
 ## Error Handling
