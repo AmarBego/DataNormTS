@@ -22,8 +22,6 @@ npm install datanormts
 yarn add datanormts
 ```
 
-*Note: Still not uploaded to NPM as it's work in progress*
-
 ## 📚 Documentation
 - [Normalization Details](./docs/normalization-details.md)
 - [Schema Validation Details](./docs/schema-validation-details.md)
