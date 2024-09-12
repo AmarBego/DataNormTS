@@ -142,7 +142,6 @@ The `normalizers` module supports custom schema types through the use of custom 
 
 ```typescript
 import { normalize, registerCustomSchemaHandler, Schema } from 'datanormts';
-import { registerCustomSchemaHandler } from 'datanormts';
 
 registerCustomSchemaHandler('customEntity', (entity, schema, entities) => {
   const id = (entity as any).id;
