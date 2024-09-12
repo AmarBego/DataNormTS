@@ -130,12 +130,6 @@ Normalizes an array of entities based on the provided schema.
 
 ### normalizePrimitive
 
-```typescript
-function normalizePrimitive(value: unknown, schema: PrimitiveSchemaEntity): unknown
-```
-
-Normalizes a primitive value based on the provided schema.
-
 ## Custom Schema Handling
 
 The `normalizers` module supports custom schema types through the use of custom schema handlers. You can register custom handlers using the `registerCustomSchemaHandler` function from the `datanormts` module. here is a quick example:
