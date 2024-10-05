@@ -1,6 +1,6 @@
 {
   "name": "datanormts",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "description": "A powerful TypeScript library for normalizing and validating complex data structures using customizable schemas",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
