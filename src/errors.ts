@@ -24,3 +24,17 @@ export class SchemaValidationError extends Error {
       this.name = 'NormalizationError';
     }
   }
+
+  /**
+ * Represents an error that occurs during denormalization.
+ * 
+ * @param message - The error message.
+ * @param context - Additional context about the error.
+ * @param cause - The underlying error that caused this error.
+ */
+  export class DenormalizationError extends Error {
+    constructor(message: string, public context: Record<string, unknown>) {
+      super(message);
+    this.name = 'DenormalizationError';
+  }
+}

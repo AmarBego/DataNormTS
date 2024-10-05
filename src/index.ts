@@ -1,3 +1,4 @@
 export * from './types';
-export { normalize } from './normalizers/normalizer';
 export { logger } from './logger';
+export { normalize } from './normalizers/normalizer';
+export { denormalize } from './denormalizers/denormalizer';

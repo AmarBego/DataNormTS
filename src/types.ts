@@ -85,3 +85,4 @@ export function getCustomSchemaHandler(type: string): CustomSchemaHandler | unde
 export function clearCustomSchemaHandlers(): void {
   Object.keys(customSchemaHandlers).forEach(key => delete customSchemaHandlers[key]);
 }
+
